@@ -8,7 +8,9 @@ Videojuego sencillo para la feria de ciencias del proyecto **Amati**. El jugador
 - **Esquiva** las distracciones: si Amati toca una, **pierde puntos** (10 en Básico, 20 en Intermedio, 35 en Avanzado; nunca baja de cero), pierde enfoque, se le caen plumas y se rompe la racha. Si el enfoque llega a cero, Amati se despista unos segundos, pero la partida no termina.
 - **Atrapa** las tarjetas de técnicas (borde verde azulado) y herramientas (borde coral). Cada 4 atrapadas seguidas sube el multiplicador, hasta x5.
 - **Poderes** (aparecen poco): Pomodoro (escudo contra distracciones), Respiración (todo va más lento) y Feynman (puntos dobles).
-- Cada 15 a 20 segundos aparece una **racha de técnicas** en forma de ola.
+- Cada 15 a 20 segundos llega una **lluvia de ideas** (una ola de técnicas). De vez en cuando aparece la tarjeta dorada **¡Eureka!** (+50 puntos).
+- **Hora dorada:** en los últimos 10 segundos todos los puntos valen doble.
+- **Gancho inmediato:** en la pantalla de inicio Amati juega sola como demostración, la primera tarjeta llega a los 2 segundos y cada racha (x2, x3…) se celebra con un destello.
 - Al terminar se muestran el puntaje, el rango, la mejor racha y las técnicas atrapadas. La mejor puntuación se guarda solo en ese dispositivo.
 
 ## Controles
@@ -53,5 +55,5 @@ README.md         Este archivo
 
 ## Notas
 
-- Las distracciones son íconos genéricos (burbuja de mensaje, corazón, campana, reproductor, teléfono, arroba). No se usan logotipos ni marcas de terceros.
+- Las distracciones son personajes genéricos con carita traviesa y ojos que siguen al colibrí (mensaje, corazón, campana, video, teléfono, carita con lengua); al chocar salen despedidas girando y la pantalla vibra. No se usan logotipos ni marcas de terceros.
 - El juego no recopila datos personales ni se conecta a ningún servidor.
