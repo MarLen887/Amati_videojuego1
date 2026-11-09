@@ -4,7 +4,8 @@ Videojuego sencillo para la feria de ciencias del proyecto **Amati**. El jugador
 
 ## Cómo se juega
 
-- **Esquiva** las distracciones: restan enfoque y rompen la racha. Si el enfoque llega a cero, Amati se despista unos segundos, pero la partida no termina.
+- **Elige el nivel** antes de jugar: Básico, Intermedio o Avanzado. Cambian la velocidad, la frecuencia de las distracciones, cuántas aparecen juntas, qué tanto se mueven y el castigo por tocarlas. La mejor puntuación se guarda por nivel.
+- **Esquiva** las distracciones: si Amati toca una, **pierde puntos** (10 en Básico, 20 en Intermedio, 35 en Avanzado; nunca baja de cero), pierde enfoque, se le caen plumas y se rompe la racha. Si el enfoque llega a cero, Amati se despista unos segundos, pero la partida no termina.
 - **Atrapa** las tarjetas de técnicas (borde verde azulado) y herramientas (borde coral). Cada 4 atrapadas seguidas sube el multiplicador, hasta x5.
 - **Poderes** (aparecen poco): Pomodoro (escudo contra distracciones), Respiración (todo va más lento) y Feynman (puntos dobles).
 - Cada 15 a 20 segundos aparece una **racha de técnicas** en forma de ola.
@@ -15,12 +16,14 @@ Videojuego sencillo para la feria de ciencias del proyecto **Amati**. El jugador
 | Dispositivo | Cómo se mueve Amati |
 |---|---|
 | Celular o tableta | Arrastrar el dedo en cualquier parte de la pantalla (movimiento relativo, para no tapar al colibrí) |
-| Computadora | Flechas o WASD. `Enter` o `Espacio` para empezar, `Esc` o `P` para pausar |
-| Control de videojuegos | Stick izquierdo o cruceta. Botón `A` para empezar o seguir, `Start` para pausar |
+| Computadora | Flechas o WASD. En el menú, izquierda y derecha cambian el nivel. `Enter` o `Espacio` para empezar, `Esc` o `P` para pausar |
+| Control de videojuegos | Stick izquierdo o cruceta (en el menú, izquierda y derecha cambian el nivel). Botón `A` para empezar o seguir, `Start` para pausar |
 
 El control se detecta al conectarlo (USB o Bluetooth) y presionar cualquier botón. Funciona con los controles que el navegador reconoce como estándar (Xbox, PlayStation y similares).
 
-En vertical, el juego gira el campo: las distracciones y tarjetas caen de arriba hacia abajo y Amati vuela hacia arriba. En horizontal vienen de derecha a izquierda.
+En horizontal, las distracciones y tarjetas vienen de derecha a izquierda. En vertical caen de arriba hacia abajo; Amati se mantiene siempre de perfil y mira hacia el lado al que se mueve.
+
+El colibrí aletea de verdad: el ala está separada del cuerpo en el sprite y gira sobre el hombro, con estela de movimiento. Aletea más rápido al subir o al recibir un golpe, y suelta plumas que caen con vaivén.
 
 ## Cómo abrirlo
 
@@ -42,7 +45,9 @@ En el repositorio: *Settings → Pages → Deploy from a branch → `main` / car
 
 ```
 index.html        Juego completo en un solo archivo (HTML + CSS + JavaScript, sin dependencias)
-assets/amati.png  Colibrí con fondo transparente
+assets/amati.png         Colibrí completo con fondo transparente
+assets/amati-ala.png     Capa del ala (se anima en el juego)
+assets/amati-cuerpo.png  Capa del cuerpo
 README.md         Este archivo
 ```
 
