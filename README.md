@@ -4,11 +4,12 @@ Videojuego sencillo para la feria de ciencias del proyecto **Amati**. El jugador
 
 ## Cómo se juega
 
-- **Elige el nivel** antes de jugar: Básico, Intermedio o Avanzado. Cambian la velocidad, la frecuencia de las distracciones, cuántas aparecen juntas, qué tanto se mueven y el castigo por tocarlas. La mejor puntuación se guarda por nivel.
+- **Dificultad única:** el juego usa un solo ritmo (rápido, con distracciones ondulantes y en parejas). La mejor puntuación se guarda en el dispositivo.
 - **Tienes 3 vidas y 60 segundos.** La partida termina cuando se acaban las vidas o el tiempo, lo que ocurra primero.
-- **Esquiva** las distracciones: si Amati toca una, **pierde una vida y puntos** (50 en Básico, 100 en Intermedio, 175 en Avanzado; nunca baja de cero), se rompe la racha, se le caen plumas y la barra de enfoque vuelve a cero.
+- **Esquiva** las distracciones: si Amati toca una, **pierde una vida y puntos** (175 puntos; nunca baja de cero), se rompe la racha, se le caen plumas y la barra de enfoque vuelve a cero.
 - **Atrapa** las tarjetas de técnicas (insignia lima) y herramientas (insignia magenta): 50 puntos cada una por el multiplicador. Cada 4 atrapadas seguidas sube el multiplicador, hasta x5.
 - **Barra de enfoque = recuperación.** Se llena solo al atrapar tarjetas (12 tarjetas llenan la barra). Al llegar al 100 % recuperas una vida y la barra se reinicia. Si ya tienes las 3 vidas, Amati te saluda aleteando con un mensaje motivador y la barra se queda llena.
+- **Sable, la mascota de la UVP, te anima.** Cada vez que Amati pierde una vida aparece Sable, te llama «Pantera» y te dice una frase motivadora de máximo 7 palabras.
 - **Bono final:** 300 puntos por cada vida restante si llegas al final del minuto.
 - **Poderes** (aparecen poco): Pomodoro (escudo contra distracciones), Respiración (todo va más lento) y Feynman (puntos dobles), +125 puntos al tomarlos.
 - La tarjeta dorada **¡Eureka!** es rara y da 250 puntos.
@@ -22,8 +23,8 @@ Videojuego sencillo para la feria de ciencias del proyecto **Amati**. El jugador
 | Dispositivo | Cómo se mueve Amati |
 |---|---|
 | Celular o tableta | Arrastrar el dedo en cualquier parte de la pantalla (movimiento relativo, para no tapar al colibrí) |
-| Computadora | Flechas o WASD. En el menú, izquierda y derecha cambian el nivel. `Enter` o `Espacio` para empezar, `Esc` o `P` para pausar |
-| Control de videojuegos | Stick izquierdo o cruceta (en el menú, izquierda y derecha cambian el nivel). Botón `A` para empezar o seguir, `Start` para pausar |
+| Computadora | Flechas o WASD. `Enter` o `Espacio` para empezar, `Esc` o `P` para pausar |
+| Control de videojuegos | Stick izquierdo o cruceta. Botón `A` para empezar o seguir, `Start` para pausar |
 
 El control se detecta al conectarlo (USB o Bluetooth) y presionar cualquier botón. Funciona con los controles que el navegador reconoce como estándar (Xbox, PlayStation y similares).
 
@@ -54,6 +55,7 @@ index.html        Juego completo en un solo archivo (HTML + CSS + JavaScript, si
 assets/amati.png         Colibrí completo con fondo transparente
 assets/amati-ala.png     Capa del ala (se anima en el juego)
 assets/amati-cuerpo.png  Capa del cuerpo
+assets/sable.png         Sable, la mascota de la universidad
 README.md         Este archivo
 ```
 
