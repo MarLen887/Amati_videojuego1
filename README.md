@@ -10,7 +10,7 @@ Videojuego sencillo para la feria de ciencias del proyecto **Amati**. El jugador
 - **Atrapa** las tarjetas de técnicas (insignia lima) y herramientas (insignia magenta): 50 puntos cada una por el multiplicador. Cada 4 atrapadas seguidas sube el multiplicador, hasta x5.
 - **Barra de enfoque = recuperación.** Se llena solo al atrapar tarjetas (12 tarjetas llenan la barra). Al llegar al 100 % recuperas una vida y la barra se reinicia. Si ya tienes las 3 vidas, Amati te saluda aleteando con un mensaje motivador y la barra se queda llena.
 - **Sable, la mascota de la UVP, te anima.** Cada vez que Amati pierde una vida aparece Sable, te llama «Pantera» y te dice una frase motivadora de máximo 7 palabras.
-- **Música y sonido:** hay música de aventura de fondo (se acelera en la hora dorada y baja en pausa) y, cada vez que aparece Sable, un rugido de pantera. Todo se sintetiza en el navegador, sin archivos de audio; el botón de bocina silencia música y efectos.
+- **Música y sonido:** hay música de aventura de fondo (se acelera en la hora dorada y baja en pausa) y, cada vez que aparece Sable, un rugido de pantera en estilo arcade, y al chocar suena un «pa-pum» retro. Todo se sintetiza en el navegador, sin archivos de audio; el botón de bocina silencia música y efectos.
 - **Bono final:** 300 puntos por cada vida restante si llegas al final del minuto.
 - **Poderes** (aparecen poco): Pomodoro (escudo contra distracciones), Respiración (todo va más lento) y Feynman (puntos dobles), +125 puntos al tomarlos.
 - La tarjeta dorada **¡Eureka!** es rara y da 250 puntos.
