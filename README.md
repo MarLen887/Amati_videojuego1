@@ -5,13 +5,17 @@ Videojuego sencillo para la feria de ciencias del proyecto **Amati**. El jugador
 ## Cómo se juega
 
 - **Elige el nivel** antes de jugar: Básico, Intermedio o Avanzado. Cambian la velocidad, la frecuencia de las distracciones, cuántas aparecen juntas, qué tanto se mueven y el castigo por tocarlas. La mejor puntuación se guarda por nivel.
-- **Esquiva** las distracciones: si Amati toca una, **pierde puntos** (10 en Básico, 20 en Intermedio, 35 en Avanzado; nunca baja de cero), pierde enfoque, se le caen plumas y se rompe la racha. Si el enfoque llega a cero, Amati se despista unos segundos, pero la partida no termina.
-- **Atrapa** las tarjetas de técnicas (borde verde azulado) y herramientas (borde coral). Cada 4 atrapadas seguidas sube el multiplicador, hasta x5.
-- **Poderes** (aparecen poco): Pomodoro (escudo contra distracciones), Respiración (todo va más lento) y Feynman (puntos dobles).
-- Cada 15 a 20 segundos llega una **lluvia de ideas** (una ola de técnicas). De vez en cuando aparece la tarjeta dorada **¡Eureka!** (+50 puntos).
+- **Tienes 3 vidas y 60 segundos.** La partida termina cuando se acaban las vidas o el tiempo, lo que ocurra primero.
+- **Esquiva** las distracciones: si Amati toca una, **pierde una vida y puntos** (50 en Básico, 100 en Intermedio, 175 en Avanzado; nunca baja de cero), se rompe la racha, se le caen plumas y la barra de enfoque vuelve a cero.
+- **Atrapa** las tarjetas de técnicas (insignia lima) y herramientas (insignia magenta): 50 puntos cada una por el multiplicador. Cada 4 atrapadas seguidas sube el multiplicador, hasta x5.
+- **Barra de enfoque = recuperación.** Se llena solo al atrapar tarjetas (12 tarjetas llenan la barra). Al llegar al 100 % recuperas una vida y la barra se reinicia. Si ya tienes las 3 vidas, Amati te saluda aleteando con un mensaje motivador y la barra se queda llena.
+- **Bono final:** 300 puntos por cada vida restante si llegas al final del minuto.
+- **Poderes** (aparecen poco): Pomodoro (escudo contra distracciones), Respiración (todo va más lento) y Feynman (puntos dobles), +125 puntos al tomarlos.
+- La tarjeta dorada **¡Eureka!** es rara y da 250 puntos.
+- Cada 15 a 20 segundos llega una **lluvia de ideas** (una ola de técnicas).
 - **Hora dorada:** en los últimos 10 segundos todos los puntos valen doble.
-- **Gancho inmediato:** en la pantalla de inicio Amati juega sola como demostración, la primera tarjeta llega a los 2 segundos y cada racha (x2, x3…) se celebra con un destello.
-- Al terminar se muestran el puntaje, el rango, la mejor racha y las técnicas atrapadas. La mejor puntuación se guarda solo en ese dispositivo.
+- **Gancho inmediato:** en la pantalla de inicio Amati juega sola como demostración y la primera tarjeta llega a los 2 segundos.
+- Al terminar se muestran el puntaje, el rango (calculado con los puntos ganados jugando, sin el bono), la mejor racha y las técnicas atrapadas. La mejor puntuación se guarda solo en ese dispositivo.
 
 ## Controles
 
@@ -55,5 +59,6 @@ README.md         Este archivo
 
 ## Notas
 
-- Las distracciones son personajes genéricos con carita traviesa y ojos que siguen al colibrí (mensaje, corazón, campana, video, teléfono, carita con lengua); al chocar salen despedidas girando y la pantalla vibra. No se usan logotipos ni marcas de terceros.
+- Las distracciones son personajes genéricos con cara enojada y ojos que siguen al colibrí (mensaje, corazón, campana, video, teléfono, carita); al chocar salen despedidas girando y la pantalla vibra. No se usan logotipos ni marcas de terceros.
+- Estilo visual «pop urbano»: cielo azul saturado, contornos gruesos y colores planos de alto contraste, pensado para verse a pleno sol. No se usan logotipos ni marcas de terceros.
 - El juego no recopila datos personales ni se conecta a ningún servidor.
