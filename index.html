@@ -575,6 +575,91 @@ const sfx = {
   end() { [523, 659, 784].forEach((f, i) => tone(f, .5, 'sine', .08, i * .12)); },
 };
 
+// ---------- Música de fondo de aventura (sintetizada) y rugido de Sable ----------
+// Do menor «heroico» a 128 pulsos por minuto: Dm - Bb - F - C, ocho compases en bucle. No usa archivos de audio.
+let musBus = null, musTimer = 0, musStep = 0, musNext = 0, noiseBuf = null;
+const MUS_VOL = .6;
+const mf = (n) => 440 * Math.pow(2, (n - 69) / 12);
+const CH = [[38, 50, 53, 57], [34, 46, 50, 53], [41, 53, 57, 60], [36, 48, 52, 55]];   // [bajo, notas del acorde]
+const MEL_BARS = [
+  [[74, 2], [69, 1], [74, 1], [77, 2], [76, 1], [74, 1], [69, 2], [72, 1], [74, 1], [76, 4]],
+  [[74, 2], [77, 1], [74, 1], [70, 2], [72, 1], [74, 1], [77, 4], [76, 2], [74, 2]],
+  [[72, 2], [77, 1], [81, 1], [79, 2], [77, 1], [76, 1], [77, 2], [69, 2], [72, 4]],
+  [[76, 2], [79, 1], [76, 1], [74, 2], [72, 1], [74, 1], [76, 4], [74, 2], [69, 2]],
+];
+const MEL = {};   // corchea -> [nota, duración en corcheas]
+{ let e = 0; for (const bars of MEL_BARS) for (const [n, l] of bars) { MEL[e] = [n, l]; e += l; } }
+function noiseBuffer() {
+  if (!noiseBuf) { noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+  return noiseBuf;
+}
+function voice(type, f, t, d, vol, lp) {
+  const o = ac.createOscillator(), g = ac.createGain(); o.type = type; o.frequency.value = f;
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+  let n = o; if (lp) { const fl = ac.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = lp; o.connect(fl); n = fl; }
+  n.connect(g); g.connect(musBus); o.start(t); o.stop(t + d + .03);
+}
+function hiss(t, d, vol, type, freq) {
+  const s = ac.createBufferSource(), fl = ac.createBiquadFilter(), g = ac.createGain();
+  s.buffer = noiseBuffer(); fl.type = type; fl.frequency.value = freq;
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+  s.connect(fl); fl.connect(g); g.connect(musBus); s.start(t); s.stop(t + d + .02);
+}
+function kick(t) {
+  const o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(42, t + .12);
+  g.gain.setValueAtTime(.55, t); g.gain.exponentialRampToValueAtTime(.0001, t + .2); o.connect(g); g.connect(musBus); o.start(t); o.stop(t + .22);
+}
+function musNote(s, t, sd) {
+  const bar = Math.floor(s / 16), ch = CH[Math.floor(bar / 2) % 4];
+  if (s % 8 === 0) kick(t);
+  if (s % 8 === 4) hiss(t, .13, .22, 'bandpass', 1800);
+  if (s % 2 === 0) hiss(t, .035, s % 4 === 2 ? .09 : .05, 'highpass', 7000);
+  if (s % 2 === 0) voice('sawtooth', mf(ch[0] + [0, 0, 12, 0, 0, 0, 12, 0][(s / 2) % 8]), t, sd * 1.9, .1, 520);
+  voice('triangle', mf(ch[1 + [0, 1, 2, 1][s % 4]] + 12), t, sd * .9, .045, 0);
+  const m = s % 2 === 0 ? MEL[(s / 2) % 64] : null;
+  if (m) { voice('square', mf(m[0]), t, sd * 2 * m[1] * .92, .05, 2600); voice('triangle', mf(m[0] - 12), t, sd * 2 * m[1] * .92, .05, 0); }
+}
+function musTick() {
+  if (!ac || !musBus) return;
+  const sd = 60 / (G && !G.demo && G.left <= 10 ? 144 : 128) / 4;   // en la hora dorada la música se acelera
+  if (musNext < ac.currentTime - .05) musNext = ac.currentTime + .05;
+  while (musNext < ac.currentTime + .18) { musNote(musStep % 128, musNext, sd); musNext += sd; musStep++; }
+}
+function musicLevel(v) { if (ac && musBus) musBus.gain.setTargetAtTime(muted ? 0 : v, ac.currentTime, .08); }
+function musicStart() {
+  audio(); if (!ac) return;
+  if (!musBus) { musBus = ac.createGain(); musBus.connect(ac.destination); }
+  musBus.gain.cancelScheduledValues(ac.currentTime); musBus.gain.setValueAtTime(muted ? 0 : MUS_VOL, ac.currentTime);
+  musStep = 0; musNext = ac.currentTime + .1;
+  if (!musTimer) musTimer = setInterval(musTick, 25);
+}
+function musicStop() {
+  if (musTimer) { clearInterval(musTimer); musTimer = 0; }
+  if (ac && musBus) { musBus.gain.cancelScheduledValues(ac.currentTime); musBus.gain.setTargetAtTime(0, ac.currentTime, .15); }
+}
+// Rugido de pantera: sierras graves con gruñido (modulación de amplitud), saturación y formantes, más aire y un golpe grave
+sfx.roar = function () {
+  if (muted || !ac || (G && G.demo)) return;
+  const t = ac.currentTime + .02, d = 1.3;
+  const out = ac.createGain(); out.gain.setValueAtTime(.0001, t); out.gain.exponentialRampToValueAtTime(.5, t + .09); out.gain.setValueAtTime(.5, t + .6); out.gain.exponentialRampToValueAtTime(.0001, t + d); out.connect(ac.destination);
+  const src = ac.createGain(); src.gain.value = 1;
+  for (const det of [0, 14, -17]) {
+    const o = ac.createOscillator(); o.type = 'sawtooth'; o.detune.value = det;
+    o.frequency.setValueAtTime(95, t); o.frequency.exponentialRampToValueAtTime(165, t + .16); o.frequency.exponentialRampToValueAtTime(64, t + d);
+    o.connect(src); o.start(t); o.stop(t + d + .05);
+  }
+  const am = ac.createGain(); am.gain.value = .6; const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = 27; lg.gain.value = .4; lfo.connect(lg); lg.connect(am.gain); lfo.start(t); lfo.stop(t + d + .05);
+  src.connect(am);
+  const sh = ac.createWaveShaper(), curve = new Float32Array(256); for (let i = 0; i < 256; i++) curve[i] = Math.tanh((i / 128 - 1) * 3); sh.curve = curve; am.connect(sh);
+  for (const [fa, fb, gv] of [[700, 480, .9], [1250, 850, .6], [2400, 1700, .25]]) {
+    const bp = ac.createBiquadFilter(), g = ac.createGain(); bp.type = 'bandpass'; bp.Q.value = 2.5; bp.frequency.setValueAtTime(fa, t); bp.frequency.linearRampToValueAtTime(fb, t + d); g.gain.value = gv; sh.connect(bp); bp.connect(g); g.connect(out);
+  }
+  const ns = ac.createBufferSource(), nf = ac.createBiquadFilter(), ng = ac.createGain(); ns.buffer = noiseBuffer(); ns.loop = true; nf.type = 'bandpass'; nf.frequency.value = 1100; nf.Q.value = .8;
+  ng.gain.setValueAtTime(.0001, t); ng.gain.exponentialRampToValueAtTime(.22, t + .08); ng.gain.exponentialRampToValueAtTime(.0001, t + d); ns.connect(nf); nf.connect(ng); ng.connect(out); ns.start(t); ns.stop(t + d + .05);
+  const bo = ac.createOscillator(), bg = ac.createGain(); bo.type = 'sine'; bo.frequency.setValueAtTime(90, t); bo.frequency.exponentialRampToValueAtTime(40, t + .5); bg.gain.setValueAtTime(.5, t); bg.gain.exponentialRampToValueAtTime(.0001, t + .55); bo.connect(bg); bg.connect(out); bo.start(t); bo.stop(t + .6);
+};
+
+
 // ---------- Entrada ----------
 const keys = new Set();
 let ptr = null;
@@ -641,12 +726,12 @@ function primary() {
   else if (state === 'pause') togglePause();
 }
 function toMenu() {
-  clearTimeout(endTimer); sableHide();
+  clearTimeout(endTimer); sableHide(); musicStop();
   state = 'menu'; show('start', true); show('end', false); show('pause', false); show('hud', false); $('chips').innerHTML = '';
 }
 function togglePause() {
-  if (state === 'play') { state = 'pause'; show('pause', true); }
-  else if (state === 'pause') { state = 'play'; show('pause', false); }
+  if (state === 'play') { state = 'pause'; show('pause', true); musicLevel(.15); }
+  else if (state === 'pause') { state = 'play'; show('pause', false); musicLevel(MUS_VOL); }
 }
 async function keepAwake() {
   try { if (navigator.wakeLock && !wake) { wake = await navigator.wakeLock.request('screen'); wake.addEventListener('release', () => { wake = null; }); } } catch (e) { wake = null; }
@@ -668,7 +753,7 @@ function resetField() {
 function startGame() {
   audio(); keepAwake();
   clearTimeout(endTimer);
-  G = newG(false); resetField(); sableHide();
+  G = newG(false); resetField(); sableHide(); musicStart();
   ptr = null;
   show('start', false); show('end', false); show('pause', false); show('hud', true);
   state = 'play';
@@ -676,7 +761,7 @@ function startGame() {
 }
 
 function finish(why) {
-  state = 'end';
+  state = 'end'; musicStop();
   if (why === 'vidas') sfx.lost(); else sfx.end();
   const k = G.lv.rank;
   const base = G.score, bonus = G.lives > 0 ? 300 * G.lives : 0;   // bono por vidas restantes
@@ -882,6 +967,7 @@ function sableSay(text) {
   if (G && G.demo) return;
   $('sableSay').textContent = text;
   $('sable').classList.add('on');
+  sfx.roar(); musicLevel(.2); setTimeout(() => { if (state === 'play') musicLevel(MUS_VOL); }, 1500);
   clearTimeout(sableT); sableT = setTimeout(sableHide, 2800);
 }
 function sableHide() { clearTimeout(sableT); $('sable').classList.remove('on'); }
@@ -1060,7 +1146,7 @@ $('bPause').addEventListener('click', togglePause);
 $('bResume').addEventListener('click', togglePause);
 $('bQuit').addEventListener('click', toMenu);
 function paintSound() { $('sndWaves').style.display = muted ? 'none' : ''; $('bSound').setAttribute('aria-pressed', String(muted)); }
-$('bSound').addEventListener('click', () => { muted = !muted; try { localStorage.setItem('amati-vuela-mute', muted ? '1' : '0'); } catch (e) { /* sin almacenamiento */ } paintSound(); audio(); });
+$('bSound').addEventListener('click', () => { muted = !muted; try { localStorage.setItem('amati-vuela-mute', muted ? '1' : '0'); } catch (e) { /* sin almacenamiento */ } paintSound(); audio(); musicLevel(state === 'pause' ? .15 : MUS_VOL); });
 paintSound();
 if (!document.fullscreenEnabled) $('bFull').hidden = true;
 $('bFull').addEventListener('click', () => {
