@@ -4,7 +4,7 @@ Videojuego sencillo para la feria de ciencias del proyecto **Amati**. El jugador
 
 ## Cómo se juega
 
-- **Dificultad única:** el juego usa un solo ritmo (rápido, con distracciones ondulantes y en parejas). La mejor puntuación se guarda en el dispositivo.
+- **Dificultad progresiva:** no hay niveles. El minuto se divide en 4 fases de 15 s; en cada una aumentan la velocidad (de 235 a 540 px/s), la frecuencia de aparición, las parejas de distracciones y su ondulación, y aparece el aviso «¡Fase N! Más rápido». Además la dificultad se adapta: una buena racha (combo alto) acelera el juego hasta un 12 % extra (hasta unos 600 px/s), y si fallas vuelve a bajar poco a poco. La mejor puntuación se guarda en el dispositivo.
 - **Tienes 3 vidas y 60 segundos.** La partida termina cuando se acaban las vidas o el tiempo, lo que ocurra primero.
 - **Esquiva** las distracciones: si Amati toca una, **pierde una vida y puntos** (175 puntos; nunca baja de cero), se rompe la racha, se le caen plumas y la barra de enfoque vuelve a cero.
 - **Atrapa** las tarjetas de técnicas (insignia lima) y herramientas (insignia magenta): 50 puntos cada una por el multiplicador. Cada 4 atrapadas seguidas sube el multiplicador, hasta x5.

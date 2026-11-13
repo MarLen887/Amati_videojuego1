@@ -296,6 +296,14 @@ const LV = {
   avanzado: { name: 'Avanzado', v0: 235, v1: 400, sp0: .62, sp1: .30, pDis: .58, pen: 175, mag: 70, amp: 1.5, powCd: 13, pair: .25, rank: 1.4 },
 };
 const level = 'avanzado';
+// Dificultad progresiva: 4 fases (cada 25 % de la ronda). v: velocidad (px lógicos/s); sp: segundos entre apariciones;
+// pair: probabilidad de distracciones en pareja; amp: ondulación; pDis: proporción de distracciones frente a tarjetas.
+const PHASE = [
+  { v: 235, sp: .62, pair: .15, amp: 1.0, pDis: .50 },
+  { v: 340, sp: .50, pair: .28, amp: 1.3, pDis: .55 },
+  { v: 440, sp: .40, pair: .42, amp: 1.7, pDis: .60 },
+  { v: 540, sp: .32, pair: .55, amp: 2.1, pDis: .64 },
+];
 const bestKey = (l) => 'amati-vuela-best2-' + l;
 
 // ---------- Estado ----------
@@ -734,7 +742,7 @@ function newG(demo) {
     demo, lv: LV[level], t: 0, left: ROUND, score: 0, combo: 0, maxCombo: 0, focus: 0, lives: 3, greet: 0, over: 0,
     caught: 0, names: new Set(), dodged: 0, hits: 0,
     shield: 0, calm: 0, dbl: 0, lost: 0, hitCd: 0, quiet: 0, flash: 0,
-    spawnT: 0.6, powCd: Math.min(6, LV[level].powCd), lastY: FH / 2, waves: [ROUND * .2, ROUND * .45, ROUND * .7, ROUND * .88], shake: 0, gh: false,
+    spawnT: 0.6, powCd: Math.min(6, LV[level].powCd), lastY: FH / 2, waves: [ROUND * .2, ROUND * .45, ROUND * .7, ROUND * .88], shake: 0, gh: false, phase: 0, perf: 0, d: { ...PHASE[0] },
   };
 }
 function resetField() {
@@ -794,10 +802,10 @@ function spawnOne() {
     G.powCd = L.powCd;
     items.push({ k: 'pow', id: pick(Object.keys(POW)), label: '', x, y, sp: .85, r: 26 });
     const it = items[items.length - 1]; it.label = POW[it.id].label;
-  } else if (r < L.pDis) {
-    const mk = (yy, dx) => ({ k: 'dis', type: Math.floor(Math.random() * DIS.length), x: x + dx, y: yy, y0: yy, sp: rand(.9, 1.25), amp: (Math.random() < .5 ? rand(12, 36) : 0) * L.amp, ph: rand(0, 6.28), rot: 0, r: 22 });
+  } else if (r < G.d.pDis) {
+    const mk = (yy, dx) => ({ k: 'dis', type: Math.floor(Math.random() * DIS.length), x: x + dx, y: yy, y0: yy, sp: rand(.9, 1.25), amp: (Math.random() < .5 ? rand(12, 36) : 0) * G.d.amp, ph: rand(0, 6.28), rot: 0, r: 22 });
     items.push(mk(y, 0));
-    if (Math.random() < L.pair) items.push(mk(clamp(y + (Math.random() < .5 ? -1 : 1) * rand(90, 150), 48, FH - 48), rand(40, 90)));
+    if (Math.random() < G.d.pair) items.push(mk(clamp(y + (Math.random() < .5 ? -1 : 1) * rand(90, 150), 48, FH - 48), rand(40, 90)));
   } else items.push(newCard(x, y, G.t > 8 && Math.random() < .06 && !items.some((q) => q.gold)));
 }
 function spawnWave() {
@@ -886,7 +894,7 @@ function update(dt) {
   }
   if (kx || ky) {
     const [fx, fy] = toField(clamp(kx, -1, 1), clamp(ky, -1, 1));
-    const sp = (G.lost > 0 ? 190 : 380);
+    const sp = G.lost > 0 ? 190 : 380 * (1 + .1 * (G.d.v - 235) / 305);   // el colibrí también se vuelve un poco más ágil
     bird.tx += fx * sp * dt; bird.ty += fy * sp * dt;
   }
   bird.tx = clamp(bird.tx, 70, FW * .55); bird.ty = clamp(bird.ty, 40, FH - 40);
@@ -898,12 +906,17 @@ function update(dt) {
 
   // generación
   const prog = 1 - G.left / ROUND;
+  // dificultad progresiva por fases, con refuerzo adaptativo: una buena racha (combo) acelera un poco más el juego (hasta +12 % de velocidad)
+  const pr = G.demo ? Math.min(prog, .4) : prog, ph = Math.min(3, Math.floor(pr * 4));
+  if (ph !== G.phase) { G.phase = ph; if (!G.demo) { toast('¡Fase ' + (ph + 1) + '! Más rápido', 1500); sfx.power(); } }
+  G.perf += (Math.min(1, G.combo / 16) - G.perf) * Math.min(1, dt * .5);
+  for (const key in PHASE[ph]) G.d[key] += (PHASE[ph][key] - G.d[key]) * Math.min(1, dt * 1.2);
   G.spawnT -= dt;
-  if (G.spawnT <= 0) { spawnOne(); G.spawnT = (G.lv.sp0 + (G.lv.sp1 - G.lv.sp0) * prog) * rand(.8, 1.2); }
+  if (G.spawnT <= 0) { spawnOne(); G.spawnT = G.d.sp / (1 + .18 * G.perf) * rand(.8, 1.2); }
   if (G.waves.length && G.t >= G.waves[0]) { G.waves.shift(); spawnWave(); }
 
   // objetos
-  const base = (G.lv.v0 + (G.lv.v1 - G.lv.v0) * prog) * (G.calm > 0 ? .5 : 1);
+  const base = G.d.v * (1 + .12 * G.perf) * (G.calm > 0 ? .5 : 1);
   const keep = [];
   for (const it of items) {
     if (it.out) {   // distracción golpeada: sale despedida girando
